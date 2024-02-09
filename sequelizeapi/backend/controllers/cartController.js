@@ -1,13 +1,14 @@
 // const User = require("../models/userModel");
 const db = require("../models");
 
-const Cart = db.cart;
-const CartItem = db.cartItem;
-const Product = db.product;
+const Cart = db.Cart;
+const CartItem = db.CartItem;
+const Product = db.Product;
+const ShippingType = db.ShippingType;
 
 const cartCalculator = async (id) => {
   let cart = await Cart.findOne({
-    where: { UserId: id },
+    where: { iUserId: id },
     include: [
       {
         model: CartItem,
@@ -17,12 +18,17 @@ const cartCalculator = async (id) => {
           },
         ],
       },
+      {
+        model: ShippingType,
+      },
     ],
   });
 
   console.log(cart.discount, "cart discount");
 
   let total = 0;
+
+  console.log(cart.CartItems);
 
   cart.CartItems.map((ci) => {
     total += ci.quantity * ci.Product.price;
@@ -34,7 +40,7 @@ const cartCalculator = async (id) => {
 
   console.log(discountedPrice, "cart total after discount");
 
-  discountedPrice += cart.shipping;
+  discountedPrice += cart.ShippingType.charge;
 
   console.log(discountedPrice, "cart total after shipping");
 
@@ -51,6 +57,9 @@ const cartCalculator = async (id) => {
           },
         ],
       },
+      {
+        model: ShippingType,
+      },
     ],
   });
 
@@ -61,18 +70,19 @@ exports.getCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
-        userId: req.user.id,
+        iUserId: req.user.id,
       },
     });
 
     if (!cart) {
       cart = await Cart.create({
-        UserId: req.user.id,
+        iUserId: req.user.id,
+        iShippingTypeId: 1,
       });
     }
 
     cart = await Cart.findOne({
-      where: { UserId: req.user.id },
+      where: { iUserId: req.user.id },
       include: [
         {
           model: CartItem,
@@ -81,6 +91,9 @@ exports.getCart = async (req, res, next) => {
               model: Product,
             },
           ],
+        },
+        {
+          model: ShippingType,
         },
       ],
     });
@@ -91,7 +104,7 @@ exports.getCart = async (req, res, next) => {
       cart,
     });
   } catch (error) {
-    console.error("Error creating cart:", error.message);
+    console.error("Error creating cart:", error);
     res.status(500).json({
       success: false,
       error: "Internal Server Error",
@@ -103,14 +116,15 @@ exports.addProductToCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
-        userId: req.user.id,
+        iUserId: req.user.id,
       },
       raw: true,
     });
 
     if (!cart) {
       cart = await Cart.create({
-        UserId: req.user.id,
+        iUserId: req.user.id,
+        iShippingTypeId: 1,
       });
     }
 
@@ -119,16 +133,16 @@ exports.addProductToCart = async (req, res, next) => {
     //creating cartitem if not wexist
     let cartItem = await CartItem.findOne({
       where: {
-        CartId: cart.id,
-        ProductId: req.body.product,
+        iCartId: cart.id,
+        iProductId: req.body.product,
       },
     });
 
     if (!cartItem) {
       cartItem = await CartItem.create(
         {
-          CartId: cart.id,
-          ProductId: req.body.product,
+          iCartId: cart.id,
+          iProductId: req.body.product,
           quantity: req.body.quantity,
         },
         { raw: true }
@@ -177,7 +191,7 @@ exports.removeProductFromCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
-        userId: req.user.id,
+        iUserId: req.user.id,
       },
       raw: true,
     });
@@ -195,8 +209,8 @@ exports.removeProductFromCart = async (req, res, next) => {
     //creating cartitem if not wexist
     let cartItem = await CartItem.findOne({
       where: {
-        CartId: cart.id,
-        ProductId: req.params.id,
+        iCartId: cart.id,
+        iProductId: req.params.id,
       },
     });
 
@@ -235,7 +249,7 @@ exports.setCartProductQuantity = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
-        userId: req.user.id,
+        iUserId: req.user.id,
       },
       raw: true,
     });
@@ -253,8 +267,8 @@ exports.setCartProductQuantity = async (req, res, next) => {
     //creating cartitem if not wexist
     let cartItem = await CartItem.findOne({
       where: {
-        CartId: cart.id,
-        ProductId: req.body.product,
+        iCartId: cart.id,
+        iProductId: req.body.product,
       },
     });
 
@@ -331,10 +345,13 @@ exports.addDiscountCode = async (req, res, next) => {
 
     if (code) {
       await Cart.update(
-        { discount: code.discount },
+        {
+          discount: code.discount,
+          couponcode: code.code,
+        },
         {
           where: {
-            UserId: req.user.id,
+            iUserId: req.user.id,
           },
         }
       );
@@ -344,14 +361,14 @@ exports.addDiscountCode = async (req, res, next) => {
       return res.status(200).json({
         success: true,
         status: 200,
-        message: "Discount Applied",
+        message: "Coupon code Applied",
         cart,
       });
     } else {
       return res.status(404).json({
         success: false,
         status: 404,
-        message: "DiscountCode not found",
+        message: "Coupon code not found",
       });
     }
   } catch (error) {
@@ -366,10 +383,13 @@ exports.addDiscountCode = async (req, res, next) => {
 exports.removeDiscountCode = async (req, res, next) => {
   try {
     await Cart.update(
-      { discount: 0 },
+      {
+        discount: 0,
+        couponcode: "",
+      },
       {
         where: {
-          UserId: req.user.id,
+          iUserId: req.user.id,
         },
       }
     );
@@ -383,6 +403,57 @@ exports.removeDiscountCode = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error adding discount to cart:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
+  }
+};
+
+exports.changeShipping = async (req, res, next) => {
+  try {
+    let cart = await Cart.findOne({
+      where: {
+        iUserId: req.user.id,
+      },
+      raw: true,
+    });
+
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "Cart Not found",
+      });
+    }
+
+    const newShipping = await ShippingType.findOne({
+      where: { id: req.body.shippingid },
+    });
+
+    if (!newShipping) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "new shipping Not found",
+      });
+    }
+
+    await Cart.update(
+      { iShippingTypeId: newShipping.id },
+      { where: { iUserId: req.user.id } }
+    );
+
+    cart = await cartCalculator(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: "shipping updated",
+      cart,
+    });
+  } catch (error) {
+    console.error("Error updating shipping cart:", error);
     res.status(500).json({
       success: false,
       error: "Internal Server Error",

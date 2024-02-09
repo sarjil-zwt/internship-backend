@@ -2,21 +2,35 @@ module.exports = (sequelize, DataTypes) => {
   const Product = sequelize.define(
     "Product",
     {
-      price: {
+      fPrice: {
         type: DataTypes.FLOAT,
         defaultValue: 0,
       },
-      title: {
+      vTitle: {
         type: DataTypes.STRING,
       },
-      image: {
+      vImage: {
         type: DataTypes.STRING,
       },
-      description: {
+      tDescription: {
         type: DataTypes.TEXT,
       },
+      fRatings: {
+        type: DataTypes.FLOAT,
+      },
+      iSubCategoryId: {
+        type: DataTypes.INTEGER,
+      },
+      dDeletedAt: {
+        type: DataTypes.DATE,
+      },
     },
-    { timestamps: false }
+    {
+      // Define global allowNull: false constraint for all fields
+      allowNull: false,
+      tableName: "Product",
+      freezeTableName: "Product",
+    }
   );
 
   return Product;

@@ -1,10 +1,11 @@
 // const User = require("../models/userModel");
 const db = require("../models");
 
-const Product = db.product;
-const CateGory = db.category;
-const CartItem = db.cartItem;
-
+const Product = db.Product;
+const CateGory = db.Category;
+const CartItem = db.CartItem;
+const Review = db.Review;
+const User = db.User;
 exports.addProduct = async (req, res, next) => {
   try {
     const product = await Product.create(req.body);
@@ -47,6 +48,37 @@ exports.getAllProducts = async (req, res, next) => {
   }
 };
 
+exports.getSingleProduct = async (req, res, next) => {
+  try {
+    const product = await Product.findOne({
+      where: {
+        id: req.params.id,
+      },
+      include: [
+        {
+          model: CateGory,
+        },
+        {
+          model: Review,
+          include: [{ model: User }],
+        },
+      ],
+    });
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error("Error creating user:", error.message);
+    res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
+  }
+};
+
 exports.updateProduct = async (req, res, next) => {
   try {
     let product = await Product.findOne({
@@ -79,6 +111,7 @@ exports.updateProduct = async (req, res, next) => {
       status: 200,
       success: true,
       product,
+      message: "Product updated successfully",
     });
   } catch (error) {
     console.error("Error updating product:", error.message);
@@ -117,10 +150,19 @@ exports.deleteProduct = async (req, res, next) => {
       },
     });
 
+    const products = await Product.findAll({
+      include: [
+        {
+          model: CateGory,
+        },
+      ],
+    });
+
     res.status(200).json({
       status: 200,
       success: true,
       message: "Product deleted",
+      products,
     });
   } catch (error) {
     console.error("Error creating user:", error.message);

@@ -1,21 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
-  const Category = sequelize.define(
-    "Category",
+  const SubCategory = sequelize.define(
+    "SubCategory",
     {
+      iCategoryId: {
+        type: DataTypes.INTEGER,
+      },
       vName: {
         type: DataTypes.STRING,
-      },
-      iGroupId: {
-        type: DataTypes.INTEGER,
       },
     },
     {
       // Define global allowNull: false constraint for all fields
       allowNull: false,
-      tableName: "Category",
-      freezeTableName: "Category",
+      tableName: "SubCategory",
+      freezeTableName: "SubCategory",
     }
   );
 
-  return Category;
+  return SubCategory;
 };

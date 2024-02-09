@@ -1,21 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
-  const Category = sequelize.define(
-    "Category",
+  const Group = sequelize.define(
+    "Group",
     {
       vName: {
         type: DataTypes.STRING,
-      },
-      iGroupId: {
-        type: DataTypes.INTEGER,
       },
     },
     {
       // Define global allowNull: false constraint for all fields
       allowNull: false,
-      tableName: "Category",
-      freezeTableName: "Category",
+      tableName: "Group",
+      freezeTableName: "Group",
     }
   );
 
-  return Category;
+  return Group;
 };

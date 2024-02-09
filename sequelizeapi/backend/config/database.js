@@ -2,7 +2,7 @@ const sequelize = require("./sequelize");
 
 const connectDatabase = async () => {
   sequelize
-    .sync({ alter: true })
+    .sync({ force: true })
     .then(() => {
       console.log("Database synced");
     })

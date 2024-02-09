@@ -48,39 +48,139 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.user = require("./user")(sequelize, DataTypes);
-db.product = require("./product")(sequelize, DataTypes);
-db.category = require("./category")(sequelize, DataTypes);
-db.cart = require("./cart")(sequelize, DataTypes);
-db.cartItem = require("./cartitem")(sequelize, DataTypes);
+db.User = require("./user")(sequelize, DataTypes);
+db.Product = require("./product")(sequelize, DataTypes);
+db.Group = require("./group")(sequelize, DataTypes);
+db.Category = require("./category")(sequelize, DataTypes);
+db.SubCategory = require("./subcategory")(sequelize, DataTypes);
 
-// db.user.hasOne(db.cart);
+db.Cart = require("./cart")(sequelize, DataTypes);
+db.CartItem = require("./cartitem")(sequelize, DataTypes);
+db.ShippingType = require("./shippingtype")(sequelize, DataTypes);
+db.Review = require("./reviews")(sequelize, DataTypes);
+db.Address = require("./address")(sequelize, DataTypes);
+db.Order = require("./order")(sequelize, DataTypes);
+db.OrderItem = require("./orderitem")(sequelize, DataTypes);
 
-// db.category.hasMany(db.product);
-// // db.product.belongsTo(db.category);
-
-// db.cart.hasMany(db.cartItem);
-// db.product.hasMany(db.cartItem);
-
-// Associations
-db.user.hasOne(db.cart, {
-  foreignKey: "UserId",
+db.User.hasOne(db.Cart, {
+  foreignKey: "iUserId",
+  onDelete: "cascade",
 });
-db.cart.belongsTo(db.user);
-
-db.category.hasMany(db.product, {
-  foreignKey: "CategoryId",
-});
-db.product.belongsTo(db.category);
-
-db.cart.hasMany(db.cartItem, {
-  foreignKey: "CartId",
-});
-db.product.hasMany(db.cartItem, {
-  foreignKey: "ProductId",
+db.Cart.belongsTo(db.User, {
+  foreignKey: "iUserId",
 });
 
-db.cartItem.belongsTo(db.cart);
-db.cartItem.belongsTo(db.product);
+// ShippingType and Cart
+db.ShippingType.hasMany(db.Cart, {
+  foreignKey: "iShippingTypeId",
+  onDelete: "cascade",
+});
+db.Cart.belongsTo(db.ShippingType, {
+  foreignKey: "iShippingTypeId",
+});
+
+// Group, Category, and SubCategory
+db.Group.hasMany(db.Category, {
+  foreignKey: "iGroupId",
+  onDelete: "CASCADE",
+});
+db.Category.belongsTo(db.Group, {
+  foreignKey: "iGroupId",
+});
+
+db.Category.hasMany(db.SubCategory, {
+  foreignKey: "iCategoryId",
+  onDelete: "cascade",
+});
+db.SubCategory.belongsTo(db.Category, {
+  foreignKey: "iCategoryId",
+  onDelete: "cascade",
+});
+
+// Product and SubCategory
+db.SubCategory.hasMany(db.Product, {
+  foreignKey: "iSubCategoryId",
+  onDelete: "cascade",
+});
+db.Product.belongsTo(db.SubCategory, {
+  foreignKey: "iSubCategoryId",
+  onDelete: "cascade",
+});
+
+// Product, Cart, and CartItem
+db.Cart.hasMany(db.CartItem, {
+  foreignKey: "iCartId",
+  onDelete: "cascade",
+});
+db.Product.hasMany(db.CartItem, {
+  foreignKey: "iProductId",
+  onDelete: "cascade",
+});
+db.CartItem.belongsTo(db.Cart, {
+  foreignKey: "iCartId",
+  onDelete: "cascade",
+});
+db.CartItem.belongsTo(db.Product, {
+  foreignKey: "iProductId",
+  onDelete: "cascade",
+});
+
+// Product, User, and Review
+db.Product.hasMany(db.Review, {
+  foreignKey: "iProductId",
+  onDelete: "cascade",
+});
+db.User.hasMany(db.Review, {
+  foreignKey: "iUserId",
+  onDelete: "cascade",
+});
+db.Review.belongsTo(db.Product, {
+  foreignKey: "iProductId",
+});
+db.Review.belongsTo(db.User, {
+  foreignKey: "iUserId",
+});
+
+// User and Address
+db.User.hasMany(db.Address, {
+  foreignKey: "iUserId",
+  onDelete: "cascade",
+});
+db.Address.belongsTo(db.User, {
+  foreignKey: "iUserId",
+});
+
+// User and Order
+db.User.hasMany(db.Order, {
+  foreignKey: "iUserId",
+  onDelete: "cascade",
+});
+db.Order.belongsTo(db.User, {
+  foreignKey: "iUserId",
+});
+
+// Order and OrderItem
+db.Order.hasMany(db.OrderItem, {
+  foreignKey: "iOrderId",
+});
+db.Product.hasMany(db.OrderItem, {
+  foreignKey: "iProductId",
+});
+db.OrderItem.belongsTo(db.Order, {
+  foreignKey: "iOrderId",
+});
+db.OrderItem.belongsTo(db.Product, {
+  foreignKey: "iProductId",
+});
+
+// Order and ShippingType
+db.ShippingType.hasMany(db.Order, {
+  foreignKey: "iShippingTypeId",
+  onDelete: "cascade",
+});
+db.Order.belongsTo(db.ShippingType, {
+  foreignKey: "iShippingTypeId",
+  onDelete: "cascade",
+});
 
 module.exports = db;

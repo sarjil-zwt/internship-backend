@@ -1,30 +1,41 @@
 "use strict";
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("Product", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
+      fPrice: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0,
+      },
+      vTitle: {
         type: Sequelize.STRING,
       },
-      email: {
+      vImage: {
         type: Sequelize.STRING,
-        allowNull: false,
-        // unique: true,
       },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      tDescription: {
+        type: Sequelize.TEXT,
       },
-      role: {
-        type: Sequelize.ENUM("admin", "manager", "user"),
+      fRatings: {
+        type: Sequelize.FLOAT,
+      },
+      iSubCategoryId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: "admin",
+        references: {
+          model: "SubCategory",
+          key: "id",
+        },
+      },
+      dDeletedAt: {
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,
@@ -36,7 +47,8 @@ module.exports = {
       },
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("Product");
   },
 };
