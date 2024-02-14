@@ -7,6 +7,7 @@ const {
   removeDiscountCode,
   removeProductFromCart,
   setCartProductQuantity,
+  changeShipping,
 } = require("../controllers/cartController");
 
 const router = Router();
@@ -21,5 +22,7 @@ router.delete("/discount/remove", isAuthenticatedUser, removeDiscountCode);
 router.post("/product/add", isAuthenticatedUser, addProductToCart);
 router.put("/product/setquantity", isAuthenticatedUser, setCartProductQuantity);
 router.delete("/product/:id", isAuthenticatedUser, removeProductFromCart);
+
+router.post("/shipping/change", isAuthenticatedUser, changeShipping);
 
 module.exports = router;

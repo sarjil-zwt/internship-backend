@@ -2,26 +2,34 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "User",
     {
-      name: {
+      vName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      email: {
+      vEmail: {
         type: DataTypes.STRING,
         allowNull: false,
         // unique: true,
       },
-      password: {
+      vPassword: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      role: {
+      vImage: {
+        type: DataTypes.STRING,
+      },
+      eRole: {
         type: DataTypes.ENUM("admin", "manager", "user"),
         allowNull: false,
         defaultValue: "admin",
       },
     },
-    { timestamps: false }
+    {
+      // Define global allowNull: false constraint for all fields
+      allowNull: false,
+      tableName: "User",
+      freezeTableName: "User",
+    }
   );
 
   return User;

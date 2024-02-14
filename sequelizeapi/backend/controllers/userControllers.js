@@ -8,19 +8,16 @@ const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/errorhander");
 
-const getToken = (id) => {
-  return jwt.sign({ id }, "sarjil", {
-    expiresIn: "3d",
-  });
-};
-
-const User = db.user;
+const User = db.User;
 
 exports.signupUser = async (req, res, next) => {
   try {
-    const email = req.body.email;
+    // console.log(req.files);
+    const { vName, vEmail, vPassword } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    console.log(req.body);
+
+    const user = await User.findOne({ where: { vEmail } });
 
     if (user) {
       return res.json({
@@ -29,13 +26,16 @@ exports.signupUser = async (req, res, next) => {
       });
     }
 
-    const newUser = await User.create(req.body);
+    const vImage = req.file ? req.file.path : null;
 
-    res.status(201).json({
-      status: 201,
-      success: true,
-      newUser,
+    const newUser = await User.create({
+      vName,
+      vEmail,
+      vPassword,
+      vImage,
     });
+
+    sendToken(newUser, 201, res);
   } catch (error) {
     console.error("Error creating user:", error.message);
     res.status(500).json({
@@ -47,29 +47,38 @@ exports.signupUser = async (req, res, next) => {
 
 exports.loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { vEmail, vPassword } = req.body;
 
     // checking if user has given password and email both
 
-    if (!email || !password) {
-      return next(new ErrorHandler("Please Enter Email & Password", 400));
+    if (!vEmail || !vPassword) {
+      return res.status(400).json({
+        status: 400,
+        success: false,
+        message: "Email or password is wrong",
+      });
     }
 
     const user = await User.findOne({
-      where: { email },
-      raw: true,
+      where: { vEmail },
     });
 
-    console.log(user);
-
     if (!user) {
-      return next(new ErrorHandler("Invalid email or password", 401));
+      return res.status(400).json({
+        status: 400,
+        success: false,
+        message: "Email or password is wrong",
+      });
     }
 
-    const isPasswordMatched = password === user.password;
+    const isPasswordMatched = vPassword === user.vPassword;
 
     if (!isPasswordMatched) {
-      return next(new ErrorHandler("Invalid email or password", 401));
+      return res.status(400).json({
+        status: 400,
+        success: false,
+        message: "Email or password is wrong",
+      });
     }
 
     sendToken(user, 200, res);
@@ -81,9 +90,50 @@ exports.loginUser = async (req, res, next) => {
   }
 };
 
+exports.logoutUser = async (req, res, next) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      status: 200,
+      message: "Logged Out",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
+  }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.findAll();
+
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
+  }
+};
+
 exports.getProfile = async (req, res, next) => {
   try {
-    const user = req.user;
+    const user = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
 
     res.status(200).json({
       success: true,

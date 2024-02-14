@@ -2,6 +2,7 @@ const {
   addCategory,
   getAllCategories,
   updateCategory,
+  deleteCategory,
 } = require("../controllers/categoryController");
 
 const { authorizeRoles, isAuthenticatedUser } = require("../middleware/auth");
@@ -22,6 +23,12 @@ router.put(
   isAuthenticatedUser,
   authorizeRoles("admin", "manager"),
   updateCategory
+);
+router.delete(
+  "/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin", "manager"),
+  deleteCategory
 );
 
 module.exports = router;

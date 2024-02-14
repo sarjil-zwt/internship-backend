@@ -1,37 +1,32 @@
 const {
-  addProduct,
-  getAllProducts,
-  updateProduct,
-  deleteProduct,
-  getSingleProduct,
-} = require("../controllers/productController");
+  getAllShippingTypes,
+  addShippingType,
+  updateShippingType,
+  deleteShippingType,
+} = require("../controllers/shippingTypeController");
 const { authorizeRoles, isAuthenticatedUser } = require("../middleware/auth");
 
 const { Router } = require("express");
-const { route } = require("./cartRoute");
 
 const router = Router();
-router.get("/", getAllProducts);
-
-router.get("/:id", getSingleProduct);
-
+router.get("/", getAllShippingTypes);
 router.post(
   "/",
   isAuthenticatedUser,
   authorizeRoles("admin", "manager"),
-  addProduct
+  addShippingType
 );
 router.put(
   "/:id",
   isAuthenticatedUser,
   authorizeRoles("admin", "manager"),
-  updateProduct
+  updateShippingType
 );
 router.delete(
   "/:id",
   isAuthenticatedUser,
   authorizeRoles("admin", "manager"),
-  deleteProduct
+  deleteShippingType
 );
 
 module.exports = router;

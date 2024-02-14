@@ -1,12 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-  const CartItem = sequelize.define(
-    "CartItem",
+  const OrderItem = sequelize.define(
+    "OrderItem",
     {
-      iQuantity: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
-      iCartId: {
+      iOrderId: {
         type: DataTypes.INTEGER,
       },
       iProductId: {
@@ -16,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     {
       // Define global allowNull: false constraint for all fields
       allowNull: false,
-      tableName: "CartItem",
-      freezeTableName: "CartItem",
+      tableName: "OrderItem",
+      freezeTableName: "OrderItem",
     }
   );
 
-  return CartItem;
+  return OrderItem;
 };
