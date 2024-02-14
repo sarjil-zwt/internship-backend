@@ -23,6 +23,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      vImage: {
+        type: Sequelize.STRING,
+      },
       eRole: {
         type: Sequelize.ENUM("admin", "manager", "user"),
         allowNull: false,

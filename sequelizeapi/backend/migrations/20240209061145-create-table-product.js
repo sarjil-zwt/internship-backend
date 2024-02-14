@@ -33,6 +33,7 @@ module.exports = {
           model: "SubCategory",
           key: "id",
         },
+        onDelete: "cascade",
       },
       dDeletedAt: {
         type: Sequelize.DATE,

@@ -12,7 +12,10 @@ const User = db.User;
 
 exports.signupUser = async (req, res, next) => {
   try {
-    const vEmail = req.body.vEmail;
+    // console.log(req.files);
+    const { vName, vEmail, vPassword } = req.body;
+
+    console.log(req.body);
 
     const user = await User.findOne({ where: { vEmail } });
 
@@ -23,7 +26,14 @@ exports.signupUser = async (req, res, next) => {
       });
     }
 
-    const newUser = await User.create(req.body);
+    const vImage = req.file ? req.file.path : null;
+
+    const newUser = await User.create({
+      vName,
+      vEmail,
+      vPassword,
+      vImage,
+    });
 
     sendToken(newUser, 201, res);
   } catch (error) {

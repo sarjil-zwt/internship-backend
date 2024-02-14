@@ -6,7 +6,7 @@ const CartItem = db.CartItem;
 const Product = db.Product;
 const ShippingType = db.ShippingType;
 const Address = db.Address;
-
+const asynvWrapper = require("../middleware/catchAsyncErrors");
 exports.getAllAddress = async (req, res, next) => {
   try {
     const addresses = await Address.findAll({
@@ -50,7 +50,7 @@ exports.addAddress = async (req, res, next) => {
   }
 };
 
-exports.getSingleAddress = async (req, res, next) => {
+exports.getSingleAddress = asynvWrapper(async (req, res, next) => {
   try {
     const address = await Address.findOne({
       where: {
@@ -70,7 +70,7 @@ exports.getSingleAddress = async (req, res, next) => {
       error: "Internal Server Error",
     });
   }
-};
+});
 
 exports.updateAddress = async (req, res, next) => {
   try {
@@ -115,6 +115,7 @@ exports.updateAddress = async (req, res, next) => {
     });
   }
 };
+
 exports.deleteAddress = async (req, res, next) => {
   try {
     const address = await Address.findOne({

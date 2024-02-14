@@ -11,7 +11,9 @@ exports.addCategory = async (req, res, next) => {
     console.log(req.body);
     const vName = req.body.vName;
     const iGroupId = req.body.iGroupId;
-    const isPresentCategory = await Category.findOne({ where: { vName } });
+    const isPresentCategory = await Category.findOne({
+      where: { vName, iGroupId },
+    });
 
     console.log(isPresentCategory);
 

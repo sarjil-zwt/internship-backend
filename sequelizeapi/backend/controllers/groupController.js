@@ -2,6 +2,7 @@ const db = require("../models");
 
 const Group = db.Group;
 const Category = db.Category;
+const SubCategory = db.SubCategory;
 
 exports.createGroup = async (req, res, next) => {
   try {
@@ -38,7 +39,14 @@ exports.createGroup = async (req, res, next) => {
 
 exports.getAllGroups = async (req, res, next) => {
   try {
-    let groups = await Group.findAll();
+    let groups = await Group.findAll({
+      include: {
+        model: Category,
+        include: {
+          model: SubCategory,
+        },
+      },
+    });
 
     res.status(200).json({
       status: 200,

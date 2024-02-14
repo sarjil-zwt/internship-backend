@@ -1,28 +1,31 @@
 const db = require("../models/index");
 
-const Review = db.review;
-const User = db.user;
-const Product = db.product;
+const Review = db.Review;
+const User = db.User;
+const Product = db.Product;
 exports.addReview = async (req, res, next) => {
   try {
-    const newReview = await Review.create({ ...req.body, UserId: req.user.id });
+    const newReview = await Review.create({
+      ...req.body,
+      iUserId: req.user.id,
+    });
 
     const allReviews = await Review.findAll({
       where: {
-        ProductId: req.body.ProductId,
+        iProductId: req.body.iProductId,
       },
     });
 
     let rating = 0;
     allReviews.forEach((r) => {
-      rating += r.rating;
+      rating += r.fRating;
     });
 
     rating /= allReviews.length;
 
     await Product.update(
-      { ratings: rating },
-      { where: { id: req.body.ProductId } }
+      { fRatings: rating },
+      { where: { id: req.body.iProductId } }
     );
 
     const review = await Review.findOne({
