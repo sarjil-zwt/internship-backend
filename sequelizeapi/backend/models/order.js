@@ -4,6 +4,19 @@ module.exports = (sequelize, DataTypes) => {
     {
       fTotal: {
         type: DataTypes.FLOAT,
+        defaultValue: 0,
+      },
+      fDiscounted: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+      },
+      fGrandTotal: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+      },
+      fTotalTax: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
       },
       fDiscount: {
         type: DataTypes.FLOAT,

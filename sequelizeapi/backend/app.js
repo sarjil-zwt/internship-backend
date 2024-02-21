@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(fileUpload());
 app.use(cors());
 app.use(morgan("dev"));
+app.use("/uploads", express.static("uploads"));
 
 const user = require("./routes/userRoute");
 const authRoutes = require("./routes/authRoute");

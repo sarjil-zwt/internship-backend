@@ -4,6 +4,7 @@ const db = require("../models");
 const SubCategory = db.SubCategory;
 const Product = db.Product;
 const Category = db.Category;
+const Group = db.Group;
 
 exports.headerSearch = async (req, res, next) => {
   try {
@@ -22,9 +23,14 @@ exports.headerSearch = async (req, res, next) => {
       include: [
         {
           model: Category,
+          include: [
+            {
+              model: Group,
+            },
+          ],
         },
       ],
-      limit: 5,
+      limit: 10,
     });
 
     const products = await Product.findAll({
@@ -38,7 +44,7 @@ exports.headerSearch = async (req, res, next) => {
         ],
       },
 
-      limit: 5,
+      limit: 10,
     });
 
     res.status(200).json({

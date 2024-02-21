@@ -11,7 +11,7 @@ const router = Router();
 //Profile Update, Get profile
 router
   .route("/")
-  .get(isAuthenticatedUser, authorizeRoles("admin", "manager"), getAllGroups)
+  .get(getAllGroups)
   .post(isAuthenticatedUser, authorizeRoles("admin", "manager"), createGroup);
 
 router.delete(

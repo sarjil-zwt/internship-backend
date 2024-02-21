@@ -173,6 +173,26 @@ db.OrderItem.belongsTo(db.Product, {
   foreignKey: "iProductId",
 });
 
+// Order and Address (Shipping Address)
+db.Order.belongsTo(db.Address, {
+  foreignKey: "iShippingAddress",
+  as: "shippingAddress", // Define alias for the association
+});
+db.Address.hasMany(db.Order, {
+  foreignKey: "iShippingAddress",
+  onDelete: "cascade",
+});
+
+// Order and Address (Billing Address)
+db.Order.belongsTo(db.Address, {
+  foreignKey: "iBillingAddress",
+  as: "billingAddress", // Define alias for the association
+});
+db.Address.hasMany(db.Order, {
+  foreignKey: "iBillingAddress",
+  onDelete: "cascade",
+});
+
 // Order and ShippingType
 db.ShippingType.hasMany(db.Order, {
   foreignKey: "iShippingTypeId",

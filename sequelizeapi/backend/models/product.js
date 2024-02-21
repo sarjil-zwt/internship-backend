@@ -18,6 +18,9 @@ module.exports = (sequelize, DataTypes) => {
       fRatings: {
         type: DataTypes.FLOAT,
       },
+      fTax: {
+        type: DataTypes.FLOAT,
+      },
       iSubCategoryId: {
         type: DataTypes.INTEGER,
       },
