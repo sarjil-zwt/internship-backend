@@ -34,7 +34,7 @@ exports.getAllProducts = async (req, res, next) => {
     const pageNoInt = parseInt(pageNo, 10);
     const limitInt = parseInt(limit, 10);
 
-    console.log(subcategory, "***************************************");
+    // console.log(subcategory, "***************************************");
 
     let whereClause = {};
 
@@ -65,6 +65,9 @@ exports.getAllProducts = async (req, res, next) => {
       where: whereClause,
       include: [
         {
+          model: Review,
+        },
+        {
           model: SubCategory,
         },
       ],
@@ -72,7 +75,7 @@ exports.getAllProducts = async (req, res, next) => {
       limit: limitInt ? limitInt : null,
     });
 
-    console.log(products, "producttttttttttttttttttttttttttt");
+    // console.log(products, "producttttttttttttttttttttttttttt");
 
     res.status(200).json({
       status: 200,

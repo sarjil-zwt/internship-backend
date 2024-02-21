@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        header {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .headerlogo {
+            height: 80px;
+        }
+
+        .headerright {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .headerrightupper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .headerrightbottom {
+            margin-top: 10px;
+        }
+
+        hr {
+            height: 1px;
+            background-color: gray;
+            width: 100%;
+        }
+
+        .orderdetailsdiv {
+            display: flex;
+            /* flex-wrap: wrap; */
+            align-items: center;
+            gap: 10px;
+        }
+
+        .orderdetails, .billingaddress, .shippingaddress{
+            /* flex-basis: calc(25% - 10px); */
+            flex: 1.5;
+
+        }
+
+        .warrentywarning {
+flex: 1;
+        }
+
+        .orderdetails, .billingaddress, .shippingaddress, .warrentywarning {
+            padding: 10px;
+            /* border: 1px solid #ccc; */
+            display: flex;
+            flex-direction: column;
+            /* align-items: center; */
+            justify-content: space-between;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            border-top: 2px solid gray;
+            border-bottom: 2px solid gray;
+        }
+        th,td{
+            padding: 5px 5px 5px 10px;
+            text-align: left;
+
+        }
+
+        .totaltd {
+            border-top: 2px solid gray;
+        }
+        .lastrowtd {
+            border-top: 2px solid gray;
+            border-bottom: 2px solid gray;
+        }
+
+        p.computergeneratedwarning {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .grandtotal{
+            font-size: 25px;
+        }
+
+        footer {
+            margin-top: auto;
+            font-size: 12px;
+        }
+
+        .footerimgdiv {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .footerimg {
+            max-height: 60px;
+        }
+
+        .returnpolicy, .conditionsapply {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="body">
+    <header>
+        <img src="logo.png" class="headerlogo" alt="">
+        <div class="headerright">
+            <div class="headerrightupper">
+                <div class="hrucontact">Contact us: 9426087797 || sarjilpatel2903@gmail.com</div>
+                <div class="hruinvoiceid"><b>Tax Invoice # </b>1212122122121212</div>
+            </div>
+            <div class="headerrightbottom">
+                <p><i><span>Eshop.com, </span>Warehouse Address: Abhishree Complex, 304, Satellite Rd, opp. Star India
+                        Bazaar, Ahmedabad, Gujarat 380015</i></p>
+            </div>
+        </div>
+    </header>
+    <hr>
+
+    <div class="orderdetailsdiv">
+        <div class="orderdetails">
+            <p><b>Order Id: #123123</b></p>
+            <p><b>Order Date: </b>11-02-2024</p>
+            <p><b>Invoice Date: </b>11-02-2024</p>
+            <p><b>VAT/TIN: </b>121212121212</p>
+            <p><b>CST #: </b>121212121212</p>
+        </div>
+        <div class="billingaddress">
+            <p><b>Billing Address</b></p>
+            <p>Name</p>
+            <p>Home Home</p>
+            <p>Home</p>
+            <p>Sundhiya 384345 Gujarat</p>
+            <p>phone</p>
+        </div>
+        <div class="shippingaddress">
+            <p><b>Shipping Address</b></p>
+            <p>Name</p>
+            <p>Home </p>
+            <p>Home</p>
+            <p>Sundhiya 384345 Gujarat</p>
+            <p>phone</p>
+        </div>
+        <div class="warrentywarning">
+            <p><i>*Keep this invoice and <br> maufacturer box for <br>warranty purposes</i></p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Title</th>
+            <th>Qty</th>
+            <th>Price (₹)</th>
+            <th>Tax (₹)</th>
+            <th>Total (₹)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Tshirts (Men)</td>
+            <td>Pack of 2 Men Typography Round Neck Cotton Blend White, Black T-Shirt</td>
+            <td>3</td>
+            <td>389</td>
+            <td>0</td>
+            <td>1167</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="totaltd">Total</td>
+            <td class="totaltd">3</td>
+            <td class="totaltd">389</td>
+            <td class="totaltd">0</td>
+            <td class="totaltd">1167</td>
+        </tr>
+
+        <tr class="lastrow">
+            <td class="lastrowtd"></td>
+            <td class="lastrowtd"></td>
+            <td class="lastrowtd grandtotal" colspan="2">Grand total</td>
+            <td class="lastrowtd grandtotal" colspan="2">₹389</td>
+        </tr>
+        </tbody>
+
+    </table>
+    <p class="computergeneratedwarning">
+        <i>This is computer generated invoice. No Signature required.</i>
+    </p>
+
+</div>
+
+<footer>
+    <div class="footerimgdiv">
+        <img src="footerlogo.png" alt="" class="footerimg">
+    </div>
+    <p class="returnpolicy">
+        <b>Returns Policy:</b> <i>At Flipkart we try to deliver perfectly each and every time. But in the off chance
+            that you need to return the item, please do so with the </i><b>original Brand</b>
+    </p>
+    <p class="conditionsapply">
+        <b>box/price tag, original packing and Invoice</b> <i>without which it will be really difficult for us to act
+            on your request. Please help us in helping you. Terms and conditions apply</i>
+    </p>
+    <p>
+        <i>The goods sold as part of this shipment are intended for end wer consumption / retail sale and not for
+            re-sale</i>
+    </p>
+    <p>
+        <i>Regd office: Kitchengiftonline.com 705 814 Ward No 6. Mehrauli, NEW DELHI, DELHI-110030</i>
+    </p>
+    <hr>
+</footer>
+</body>
+</html>

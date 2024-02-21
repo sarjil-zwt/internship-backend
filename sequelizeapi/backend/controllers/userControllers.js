@@ -9,13 +9,18 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/errorhander");
 
 const User = db.User;
+const Cart = db.Cart;
+const CartItem = db.CartItem;
+const Order = db.Order;
+const OrderItem = db.OrderItem;
+const Product = db.Product;
+const ShippingType = db.ShippingType;
+const Address = db.Address;
 
 exports.signupUser = async (req, res, next) => {
   try {
     // console.log(req.files);
     const { vName, vEmail, vPassword } = req.body;
-
-    console.log(req.body);
 
     const user = await User.findOne({ where: { vEmail } });
 
@@ -26,13 +31,13 @@ exports.signupUser = async (req, res, next) => {
       });
     }
 
-    const vImage = req.file ? req.file.path : null;
+    const vImage = req.file ? req.file.filename : "";
 
     const newUser = await User.create({
       vName,
       vEmail,
       vPassword,
-      vImage,
+      vImage: process.env.SERVER_URL + "/uploads/" + vImage,
     });
 
     sendToken(newUser, 201, res);
@@ -133,6 +138,44 @@ exports.getProfile = async (req, res, next) => {
       where: {
         id: req.user.id,
       },
+
+      include: [
+        {
+          model: Cart,
+          include: [
+            {
+              model: CartItem,
+              include: [
+                {
+                  model: Product,
+                },
+              ],
+            },
+            {
+              model: ShippingType,
+            },
+          ],
+        },
+        {
+          model: Order,
+          include: [
+            {
+              model: OrderItem,
+              include: [
+                {
+                  model: Product,
+                },
+              ],
+            },
+            {
+              model: ShippingType,
+            },
+          ],
+        },
+        {
+          model: Address,
+        },
+      ],
     });
 
     res.status(200).json({
@@ -140,6 +183,7 @@ exports.getProfile = async (req, res, next) => {
       user,
     });
   } catch (error) {
+    console.log("Error getting profile", error);
     res.status(500).json({
       success: false,
       error: "Internal Server Error",

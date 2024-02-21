@@ -27,27 +27,44 @@ const cartCalculator = async (id) => {
   console.log(cart.discount, "cart discount");
 
   let total = 0;
-
-  console.log(cart.CartItems);
+  let taxapplied = 0;
+  let discountedPrice = 0;
+  let grandTotal = 0;
 
   cart.CartItems.map((ci) => {
-    total += ci.quantity * ci.Product.price;
+    console.log(ci.Product);
+    total +=
+      ci.iQuantity *
+      (ci.Product.fPrice + (ci.Product.fPrice * ci.Product.fTax) / 100);
+    taxapplied += (ci.iQuantity * ci.Product.fPrice * ci.Product.fTax) / 100;
   });
 
-  console.log(cart.total, "cart total");
+  console.log(total, taxapplied, "cart total,tax");
 
-  let discountedPrice = ((100 - cart.discount) * total) / 100;
+  discountedPrice = ((100 - cart.fDiscount) * total) / 100;
 
-  console.log(discountedPrice, "cart total after discount");
+  console.log(discountedPrice, "cart discounted price after discount");
 
-  discountedPrice += cart.ShippingType.charge;
+  grandTotal = discountedPrice + cart.ShippingType.fCharge;
 
-  console.log(discountedPrice, "cart total after shipping");
+  console.log(grandTotal, "cart Grand total after shipping");
 
-  await Cart.update({ total: discountedPrice }, { where: { id: cart.id } });
+  await Cart.update(
+    {
+      fTotal: total,
+      fDiscounted: discountedPrice,
+      fTotalTax: taxapplied,
+      fGrandTotal: grandTotal,
+    },
+    {
+      where: {
+        id: cart.id,
+      },
+    }
+  );
 
   cart = await await Cart.findOne({
-    where: { UserId: id },
+    where: { iUserId: id },
     include: [
       {
         model: CartItem,
@@ -66,7 +83,7 @@ const cartCalculator = async (id) => {
   return cart;
 };
 
-exports.getCart = async (req, res, next) => {
+const getCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
@@ -112,7 +129,7 @@ exports.getCart = async (req, res, next) => {
   }
 };
 
-exports.addProductToCart = async (req, res, next) => {
+const addProductToCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
@@ -134,7 +151,7 @@ exports.addProductToCart = async (req, res, next) => {
     let cartItem = await CartItem.findOne({
       where: {
         iCartId: cart.id,
-        iProductId: req.body.product,
+        iProductId: req.body.iProductId,
       },
     });
 
@@ -142,8 +159,8 @@ exports.addProductToCart = async (req, res, next) => {
       cartItem = await CartItem.create(
         {
           iCartId: cart.id,
-          iProductId: req.body.product,
-          quantity: req.body.quantity,
+          iProductId: req.body.iProductId,
+          iQuantity: req.body.iQuantity,
         },
         { raw: true }
       );
@@ -158,7 +175,7 @@ exports.addProductToCart = async (req, res, next) => {
       );
       await CartItem.update(
         {
-          quantity: cartItem.quantity + req.body.quantity,
+          iQuantity: cartItem.iQuantity + req.body.iQuantity,
         },
         {
           where: {
@@ -187,7 +204,7 @@ exports.addProductToCart = async (req, res, next) => {
   }
 };
 
-exports.removeProductFromCart = async (req, res, next) => {
+const removeProductFromCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
@@ -245,7 +262,7 @@ exports.removeProductFromCart = async (req, res, next) => {
   }
 };
 
-exports.setCartProductQuantity = async (req, res, next) => {
+const setCartProductQuantity = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
@@ -268,7 +285,7 @@ exports.setCartProductQuantity = async (req, res, next) => {
     let cartItem = await CartItem.findOne({
       where: {
         iCartId: cart.id,
-        iProductId: req.body.product,
+        iProductId: req.body.iProductId,
       },
     });
 
@@ -281,7 +298,7 @@ exports.setCartProductQuantity = async (req, res, next) => {
     }
 
     await CartItem.update(
-      { quantity: req.body.quantity },
+      { iQuantity: req.body.iQuantity },
       {
         where: {
           id: cartItem.id,
@@ -337,7 +354,7 @@ const discountCodes = [
   },
 ];
 
-exports.addDiscountCode = async (req, res, next) => {
+const addDiscountCode = async (req, res, next) => {
   try {
     const discountCode = req.body.discountCode;
 
@@ -346,8 +363,8 @@ exports.addDiscountCode = async (req, res, next) => {
     if (code) {
       await Cart.update(
         {
-          discount: code.discount,
-          couponcode: code.code,
+          fDiscount: code.discount,
+          vCouponcode: code.code,
         },
         {
           where: {
@@ -380,12 +397,12 @@ exports.addDiscountCode = async (req, res, next) => {
   }
 };
 
-exports.removeDiscountCode = async (req, res, next) => {
+const removeDiscountCode = async (req, res, next) => {
   try {
     await Cart.update(
       {
-        discount: 0,
-        couponcode: "",
+        fDiscount: 0,
+        vCouponcode: "",
       },
       {
         where: {
@@ -410,7 +427,7 @@ exports.removeDiscountCode = async (req, res, next) => {
   }
 };
 
-exports.changeShipping = async (req, res, next) => {
+const changeShipping = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       where: {
@@ -428,7 +445,7 @@ exports.changeShipping = async (req, res, next) => {
     }
 
     const newShipping = await ShippingType.findOne({
-      where: { id: req.body.shippingid },
+      where: { id: req.body.iShippingid },
     });
 
     if (!newShipping) {
@@ -459,4 +476,15 @@ exports.changeShipping = async (req, res, next) => {
       error: "Internal Server Error",
     });
   }
+};
+
+module.exports = {
+  getCart,
+  addProductToCart,
+  removeProductFromCart,
+  setCartProductQuantity,
+  addDiscountCode,
+  removeDiscountCode,
+  changeShipping,
+  cartCalculator,
 };

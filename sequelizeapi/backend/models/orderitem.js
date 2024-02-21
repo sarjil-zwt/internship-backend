@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
       iProductId: {
         type: DataTypes.INTEGER,
       },
+      iQuantity: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       // Define global allowNull: false constraint for all fields
